@@ -6,5 +6,9 @@ namespace Escc.Umbraco
     /// </summary>
     public abstract class BaseViewModel
     {
+        /// <summary>
+        /// Gets or sets the page title
+        /// </summary>
+        public string PageTitle { get; set; }
     }
 }
