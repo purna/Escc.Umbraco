@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Escc.Umbraco")]
-[assembly: AssemblyDescription("Base types for Umbraco-based sites")]
+[assembly: AssemblyDescription("Common base types and models for Umbraco-based sites")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("East Sussex County Council")]
 [assembly: AssemblyProduct("Escc.Umbraco")]
