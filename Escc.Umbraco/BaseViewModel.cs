@@ -19,6 +19,6 @@ namespace Escc.Umbraco
         /// <summary>
         /// Gets or sets whether the current view is a published page
         /// </summary>
-        public string IsPublishedView { get; set; }
+        public bool IsPublishedView { get; set; }
     }
 }
