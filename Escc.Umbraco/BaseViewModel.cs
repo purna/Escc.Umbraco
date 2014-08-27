@@ -10,5 +10,15 @@ namespace Escc.Umbraco
         /// Gets or sets the page title
         /// </summary>
         public string PageTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the JavaScript for a Google Analytics content experiment
+        /// </summary>
+        public string ContentExperimentScript { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the current view is a published page
+        /// </summary>
+        public string IsPublishedView { get; set; }
     }
 }
