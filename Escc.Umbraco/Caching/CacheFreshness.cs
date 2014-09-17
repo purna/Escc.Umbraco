@@ -2,6 +2,9 @@
 
 namespace Escc.Umbraco.Caching
 {
+    /// <summary>
+    /// Model for how long content should be cached
+    /// </summary>
     public class CacheFreshness
     {
         /// <summary>
