@@ -1,4 +1,4 @@
 Escc.Umbraco
 =============
 
-Base types for Umbraco-based sites.
+Common code for Umbraco-based sites.
