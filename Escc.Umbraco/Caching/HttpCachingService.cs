@@ -15,13 +15,14 @@ namespace Escc.Umbraco.Caching
         /// Sets the content of the HTTP cache headers from well-known Umbraco properties.
         /// </summary>
         /// <param name="content">The Umbraco published content node.</param>
-        /// <param name="expiryDateFieldAliases">Aliases of any fields containing expiry dates. Expiry of the page itself is taken care of by default.</param>
         /// <param name="isPreview">if set to <c>true</c> Umbraco is in preview mode.</param>
         /// <param name="cachePolicy">The cache policy.</param>
-        public static void SetHttpCacheHeadersFromUmbracoContent(IPublishedContent content, IList<string> expiryDateFieldAliases, bool isPreview, HttpCachePolicyBase cachePolicy)
+        /// <param name="expiryDateFieldAliases">Aliases of any additional fields containing expiry dates. Expiry of the page itself is taken care of by default.</param>
+        /// <param name="defaultCachePeriodInSeconds">The default cache period in seconds.</param>
+        public static void SetHttpCacheHeadersFromUmbracoContent(IPublishedContent content, bool isPreview, HttpCachePolicyBase cachePolicy, IList<string> expiryDateFieldAliases = null, int defaultCachePeriodInSeconds = 86400)
         {
-            // Default to 24 hours, but allow specific pages to override this
-            var defaultCachePeriod = new TimeSpan(1, 0, 0, 0);
+            // Default to 24 hours, but allow calling code or an Umbraco property on specific pages to override this
+            var defaultCachePeriod = new TimeSpan(0, 0, 0, defaultCachePeriodInSeconds);
             var pageCachePeriod = ParseTimeSpan(content.GetPropertyValue<string>("cache"));
             var cachePeriod = (pageCachePeriod == TimeSpan.Zero) ? defaultCachePeriod : pageCachePeriod;
 
