@@ -15,24 +15,30 @@ namespace Escc.Umbraco.Caching
         /// Sets the content of the HTTP cache headers from well-known Umbraco properties.
         /// </summary>
         /// <param name="content">The Umbraco published content node.</param>
+        /// <param name="expiryDateFieldAliases">Aliases of any fields containing expiry dates. Expiry of the page itself is taken care of by default.</param>
         /// <param name="isPreview">if set to <c>true</c> Umbraco is in preview mode.</param>
         /// <param name="cachePolicy">The cache policy.</param>
-        public static void SetHttpCacheHeadersFromUmbracoContent(IPublishedContent content, bool isPreview, HttpCachePolicyBase cachePolicy)
+        public static void SetHttpCacheHeadersFromUmbracoContent(IPublishedContent content, IList<string> expiryDateFieldAliases, bool isPreview, HttpCachePolicyBase cachePolicy)
         {
             // Default to 24 hours, but allow specific pages to override this
             var defaultCachePeriod = new TimeSpan(1, 0, 0, 0);
             var pageCachePeriod = ParseTimeSpan(content.GetPropertyValue<string>("cache"));
             var cachePeriod = (pageCachePeriod == TimeSpan.Zero) ? defaultCachePeriod : pageCachePeriod;
 
-            DateTime? contentExpiry = content.GetPropertyValue<DateTime>("unpublishAt");
-            if (contentExpiry == DateTime.MinValue) contentExpiry = null;
+            // Use well-known unpublishAt property alias set by ExpiryDateEventHandler, but allow other expiry fields to be specified too
+            if (expiryDateFieldAliases == null) expiryDateFieldAliases = new List<string>();
+            if (!expiryDateFieldAliases.Contains("unpublishAt")) expiryDateFieldAliases.Add("unpublishAt");
+            var expiryDates = new List<DateTime>();
 
-            DateTime? latestExpiry = content.GetPropertyValue<DateTime>("latestUnpublishDate");
-            if (latestExpiry == DateTime.MinValue) latestExpiry = null;
+            foreach (var fieldAlias in expiryDateFieldAliases)
+            {
+                var expiryDate = content.GetPropertyValue<DateTime>(fieldAlias);
+                if (expiryDate != DateTime.MinValue) expiryDates.Add(expiryDate);
+            }
 
             SetHttpCacheHeaders(DateTime.UtcNow,
                 cachePeriod,
-                new List<DateTime?>() { contentExpiry, latestExpiry },
+                expiryDates,
                 UmbracoContext.Current.InPreviewMode, cachePolicy);
         }
 
@@ -44,7 +50,7 @@ namespace Escc.Umbraco.Caching
         /// <param name="contentExpiryDates">Expiry dates for any content, either part of a page or the whole page.</param>
         /// <param name="isPreview">if set to <c>true</c> [is preview].</param>
         /// <param name="cachePolicy">The cache policy.</param>
-        private static void SetHttpCacheHeaders(DateTime relativeToDate, TimeSpan defaultCachePeriod, IList<DateTime?> contentExpiryDates, bool isPreview, HttpCachePolicyBase cachePolicy)
+        private static void SetHttpCacheHeaders(DateTime relativeToDate, TimeSpan defaultCachePeriod, IList<DateTime> contentExpiryDates, bool isPreview, HttpCachePolicyBase cachePolicy)
         {
             // Only do this if it's enabled in web.config
             if (!IsHttpCachingEnabled()) return;
@@ -75,7 +81,7 @@ namespace Escc.Umbraco.Caching
         /// <param name="defaultCachePeriod">The default cache period.</param>
         /// <param name="contentExpiryDates">Expiry dates for any content, either part of a page or the whole page.</param>
         /// <returns>An absolute time and relative timespan representing how long to cache the content for.</returns>
-        public static CacheFreshness WorkOutCacheFreshness(DateTime relativeToDate, TimeSpan defaultCachePeriod, IList<DateTime?> contentExpiryDates)
+        public static CacheFreshness WorkOutCacheFreshness(DateTime relativeToDate, TimeSpan defaultCachePeriod, IList<DateTime> contentExpiryDates)
         {
             // Convert date to UTC so that it can be compared on an equal basis
             relativeToDate = relativeToDate.ToUniversalTime();
@@ -90,7 +96,7 @@ namespace Escc.Umbraco.Caching
             for (var i = 0; i < contentExpiryDates.Count; i++)
             {
                 // Convert date to UTC so that it can be compared on an equal basis
-                if (contentExpiryDates[i].HasValue) contentExpiryDates[i] = contentExpiryDates[i].Value.ToUniversalTime();
+                contentExpiryDates[i] = contentExpiryDates[i].ToUniversalTime();
 
                 // Check if some or all of the content expires sooner than the default cache period?
                 OverrideDueToContentExpiry(freshness, relativeToDate, contentExpiryDates[i]);
@@ -100,11 +106,11 @@ namespace Escc.Umbraco.Caching
 
         }
 
-        private static void OverrideDueToContentExpiry(CacheFreshness freshness, DateTime relativeToDate, DateTime? expiryDate)
+        private static void OverrideDueToContentExpiry(CacheFreshness freshness, DateTime relativeToDate, DateTime expiryDate)
         {
-            if (expiryDate.HasValue && expiryDate > relativeToDate && expiryDate < freshness.FreshUntil)
+            if (expiryDate > relativeToDate && expiryDate < freshness.FreshUntil)
             {
-                freshness.FreshFor = expiryDate.Value.Subtract(relativeToDate);
+                freshness.FreshFor = expiryDate.Subtract(relativeToDate);
                 freshness.FreshUntil = relativeToDate.Add(freshness.FreshFor);
             }
         }
