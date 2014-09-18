@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.Web;
 using Umbraco.Core.Models;
 using Umbraco.Web;
@@ -137,10 +139,22 @@ namespace Escc.Umbraco.Caching
             return TimeSpan.Zero;
         }
 
+        /// <summary>
+        /// Determines whether HTTP caching is enabled for Umbraco pages 
+        /// </summary>
+        /// <returns>
+        /// 	<c>true</c> if Umbraco caching is enabled; otherwise, <c>false</c>.
+        /// </returns>
         private static bool IsHttpCachingEnabled()
         {
-            return true;
+            // Look in config. If caching not explicitly disabled, it's enabled. Can also be explicitly enabled to allow override of higher-level web.config.
+            var config = ConfigurationManager.GetSection("Escc.Umbraco/GeneralSettings") as NameValueCollection;
+            if (config == null || String.IsNullOrEmpty(config["HttpCachingEnabled"]) || config["HttpCachingEnabled"].ToUpperInvariant() != "FALSE") return true;
+
+            return false;
         }
+
+
 
 
     }

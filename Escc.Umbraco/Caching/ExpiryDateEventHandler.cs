@@ -5,7 +5,7 @@ using Umbraco.Core.Models;
 using Umbraco.Core.Publishing;
 using Umbraco.Core.Services;
 
-namespace Escc.Umbraco.CustomerFocusTemplates.Services
+namespace Escc.Umbraco.Caching
 {
     /// <summary>
     /// Make a copy of the expiry date when content is saved, so that it can be retrieved from the Umbraco cache. 
