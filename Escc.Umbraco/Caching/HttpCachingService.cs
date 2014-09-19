@@ -28,7 +28,7 @@ namespace Escc.Umbraco.Caching
             var pageCachePeriod = ParseTimeSpan(content.GetPropertyValue<string>("cache"));
             var cachePeriod = (pageCachePeriod == TimeSpan.Zero) ? defaultCachePeriod : pageCachePeriod;
 
-            // Use well-known unpublishAt property alias set by ExpiryDateEventHandler, but allow other expiry fields to be specified too
+            // Use well-known unpublishAt property alias set by PublishingDatesEventHandler, but allow other expiry fields to be specified too
             if (expiryDateFieldAliases == null) expiryDateFieldAliases = new List<string>();
             if (!expiryDateFieldAliases.Contains("unpublishAt")) expiryDateFieldAliases.Add("unpublishAt");
             var expiryDates = new List<DateTime>();
