@@ -2,7 +2,6 @@
 using Umbraco.Core;
 using Umbraco.Core.Events;
 using Umbraco.Core.Models;
-using Umbraco.Core.Publishing;
 using Umbraco.Core.Services;
 
 namespace Escc.Umbraco
@@ -29,7 +28,12 @@ namespace Escc.Umbraco
         /// <param name="applicationContext"></param>
         public void OnApplicationStarting(UmbracoApplicationBase umbracoApplication, ApplicationContext applicationContext)
         {
-            ContentService.Published += ContentService_Published;
+            // Using Saving rather than Published event for three reasons:
+            //
+            // 1. It fires at the moment of saving for pages set to publish in the future. 
+            // 2. Save about to happen anyway so no need to call the ContentService, therefore audit trail not affected.
+            // 3. Published event uses IPublishedStategy, and its Publish() method doesn't update the cache.
+            ContentService.Saving += ContentService_Saving;
         }
 
         /// <summary>
@@ -42,24 +46,16 @@ namespace Escc.Umbraco
 
         }
 
-        void ContentService_Published(IPublishingStrategy sender, PublishEventArgs<IContent> e)
+        void ContentService_Saving(IContentService contentService, SaveEventArgs<IContent> e)
         {
-            foreach (var entity in e.PublishedEntities)
+            foreach (var entity in e.SavedEntities)
             {
-                var publishUpdated = CopyPublishingDateToProperty(entity, entity.ReleaseDate, "publishAt");
-                var unpublishUpdated = CopyPublishingDateToProperty(entity, entity.ExpireDate, "unpublishAt");
-
-                // Couldn't use sender.Publish() because it doesn't update the cache.
-                // Unfortunately using this method results in a double save in the audit trail.
-                if (publishUpdated || unpublishUpdated)
-                {
-                    ApplicationContext.Current.Services.ContentService.PublishWithStatus(entity,
-                        entity.WriterId);
-                }
+                CopyPublishingDateToProperty(entity, entity.ReleaseDate, "publishAt");
+                CopyPublishingDateToProperty(entity, entity.ExpireDate, "unpublishAt");
             }
         }
 
-        private static bool CopyPublishingDateToProperty(IContent entity, DateTime? publishingDate, string copiedPropertyAlias)
+        private static void CopyPublishingDateToProperty(IContent entity, DateTime? publishingDate, string copiedPropertyAlias)
         {
             // Ignore any document types not set up to support this
             if (entity.HasProperty(copiedPropertyAlias))
@@ -76,12 +72,8 @@ namespace Escc.Umbraco
                     {
                         entity.SetValue(copiedPropertyAlias, null);
                     }
-
-                    return true;
                 }
             }
-
-            return false;
         }
 
         private static bool HasDatePropertyChanged(IContent entity, DateTime? publishingDate, string copiedPropertyAlias)
