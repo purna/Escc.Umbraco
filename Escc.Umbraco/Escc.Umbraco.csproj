@@ -213,6 +213,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PublishingDateBugFixHandler.cs" />
     <Compile Include="Caching\CacheFreshness.cs" />
     <Compile Include="PublishingDatesEventHandler.cs" />
     <Compile Include="Caching\HttpCachingService.cs" />

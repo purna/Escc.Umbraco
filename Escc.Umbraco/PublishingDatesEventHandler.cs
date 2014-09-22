@@ -50,7 +50,6 @@ namespace Escc.Umbraco
         {
             foreach (var entity in e.SavedEntities)
             {
-                CopyPublishingDateToProperty(entity, entity.ReleaseDate, "publishAt");
                 CopyPublishingDateToProperty(entity, entity.ExpireDate, "unpublishAt");
             }
         }
