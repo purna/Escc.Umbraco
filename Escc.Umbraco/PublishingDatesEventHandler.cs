@@ -10,6 +10,7 @@ namespace Escc.Umbraco
     /// Make a copy of the release and expiry dates when content is saved, so that they can be retrieved from the Umbraco cache. 
     /// The built-in properties are only available from the database.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     public class PublishingDatesEventHandler : IApplicationEventHandler
     {
         /// <summary>

@@ -11,7 +11,7 @@ namespace Escc.Umbraco.Caching
     /// <summary>
     /// Manage HTTP caching for Umbraco content
     /// </summary>
-    public class HttpCachingService
+    public class HttpCachingService : IHttpCachingService
     {
         /// <summary>
         /// Sets the content of the HTTP cache headers from well-known Umbraco properties.
@@ -21,7 +21,7 @@ namespace Escc.Umbraco.Caching
         /// <param name="cachePolicy">The cache policy.</param>
         /// <param name="expiryDateFieldAliases">Aliases of any additional fields containing expiry dates. Expiry of the page itself is taken care of by default.</param>
         /// <param name="defaultCachePeriodInSeconds">The default cache period in seconds.</param>
-        public static void SetHttpCacheHeadersFromUmbracoContent(IPublishedContent content, bool isPreview, HttpCachePolicyBase cachePolicy, IList<string> expiryDateFieldAliases = null, int defaultCachePeriodInSeconds = 86400)
+        public void SetHttpCacheHeadersFromUmbracoContent(IPublishedContent content, bool isPreview, HttpCachePolicyBase cachePolicy, IList<string> expiryDateFieldAliases = null, int defaultCachePeriodInSeconds = 86400)
         {
             // Default to 24 hours, but allow calling code or an Umbraco property on specific pages to override this
             var defaultCachePeriod = new TimeSpan(0, 0, 0, defaultCachePeriodInSeconds);
@@ -42,7 +42,7 @@ namespace Escc.Umbraco.Caching
             SetHttpCacheHeaders(DateTime.UtcNow,
                 cachePeriod,
                 expiryDates,
-                UmbracoContext.Current.InPreviewMode, cachePolicy);
+                isPreview, cachePolicy);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Escc.Umbraco.Caching
         /// <param name="contentExpiryDates">Expiry dates for any content, either part of a page or the whole page.</param>
         /// <param name="isPreview">if set to <c>true</c> [is preview].</param>
         /// <param name="cachePolicy">The cache policy.</param>
-        private static void SetHttpCacheHeaders(DateTime relativeToDate, TimeSpan defaultCachePeriod, IList<DateTime> contentExpiryDates, bool isPreview, HttpCachePolicyBase cachePolicy)
+        private void SetHttpCacheHeaders(DateTime relativeToDate, TimeSpan defaultCachePeriod, IList<DateTime> contentExpiryDates, bool isPreview, HttpCachePolicyBase cachePolicy)
         {
             // Only do this if it's enabled in web.config
             if (!IsHttpCachingEnabled()) return;
@@ -84,8 +84,10 @@ namespace Escc.Umbraco.Caching
         /// <param name="defaultCachePeriod">The default cache period.</param>
         /// <param name="contentExpiryDates">Expiry dates for any content, either part of a page or the whole page.</param>
         /// <returns>An absolute time and relative timespan representing how long to cache the content for.</returns>
-        public static CacheFreshness WorkOutCacheFreshness(DateTime relativeToDate, TimeSpan defaultCachePeriod, IList<DateTime> contentExpiryDates)
+        public CacheFreshness WorkOutCacheFreshness(DateTime relativeToDate, TimeSpan defaultCachePeriod, IList<DateTime> contentExpiryDates)
         {
+            if (contentExpiryDates == null) throw new ArgumentNullException("contentExpiryDates");
+
             // Convert date to UTC so that it can be compared on an equal basis
             relativeToDate = relativeToDate.ToUniversalTime();
 

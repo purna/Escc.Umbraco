@@ -21,7 +21,8 @@ namespace Escc.Umbraco.Tests
             var expiryDate = _startDate.AddHours(23);
 
             // Should pick the expiry date, not default timespan
-            var freshness = HttpCachingService.WorkOutCacheFreshness(_startDate, _defaultCachePeriod, new List<DateTime>() { expiryDate });
+            var service = new HttpCachingService();
+            var freshness = service.WorkOutCacheFreshness(_startDate, _defaultCachePeriod, new List<DateTime>() { expiryDate });
 
             Assert.AreEqual(freshness.FreshFor, expiryDate - _startDate);
             Assert.AreEqual(freshness.FreshUntil, expiryDate);
@@ -35,8 +36,8 @@ namespace Escc.Umbraco.Tests
             var expiryDate3 = _startDate.AddHours(11);
 
             // Should pick second expiry date
-            var freshness = HttpCachingService.WorkOutCacheFreshness(_startDate, _defaultCachePeriod,
-                new List<DateTime>() { expiryDate1, expiryDate2, expiryDate3 });
+            var service = new HttpCachingService();
+            var freshness = service.WorkOutCacheFreshness(_startDate, _defaultCachePeriod, new List<DateTime>() { expiryDate1, expiryDate2, expiryDate3 });
 
             Assert.AreEqual(freshness.FreshFor, expiryDate2 - _startDate);
             Assert.AreEqual(freshness.FreshUntil, expiryDate2);
@@ -49,7 +50,8 @@ namespace Escc.Umbraco.Tests
             var expiryDate = _startDate.AddHours(30);
 
             // Should pick the default timespan, not expiry date
-            var freshness = HttpCachingService.WorkOutCacheFreshness(_startDate, _defaultCachePeriod, new List<DateTime>() { expiryDate });
+            var service = new HttpCachingService();
+            var freshness = service.WorkOutCacheFreshness(_startDate, _defaultCachePeriod, new List<DateTime>() { expiryDate });
 
             Assert.AreEqual(freshness.FreshFor, _defaultCachePeriod);
             Assert.AreEqual(freshness.FreshUntil, _startDate.Add(_defaultCachePeriod));
@@ -64,7 +66,8 @@ namespace Escc.Umbraco.Tests
             // Expiry should be the default timespan
             // This is because the date likely relates to partial content, which is not part of what we'll be serving up anyway. 
             // If the whole content had expired, we would be asking to cache it in the first place.
-            var freshness = HttpCachingService.WorkOutCacheFreshness(_startDate, _defaultCachePeriod, new List<DateTime>() { expiryDate });
+            var service = new HttpCachingService();
+            var freshness = service.WorkOutCacheFreshness(_startDate, _defaultCachePeriod, new List<DateTime>() { expiryDate });
 
             Assert.AreEqual(freshness.FreshFor, _defaultCachePeriod);
             Assert.AreEqual(freshness.FreshUntil, _startDate.Add(_defaultCachePeriod));

@@ -213,18 +213,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\IHttpCachingService.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="ITargetUrlReader.cs" />
     <Compile Include="PublishingDateBugFixHandler.cs" />
     <Compile Include="Caching\CacheFreshness.cs" />
     <Compile Include="PublishingDatesEventHandler.cs" />
     <Compile Include="Caching\HttpCachingService.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TargetUrlReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="CustomDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
