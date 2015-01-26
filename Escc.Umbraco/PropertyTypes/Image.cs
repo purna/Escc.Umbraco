@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Escc.Umbraco
+namespace Escc.Umbraco.PropertyTypes
 {
     /// <summary>
     /// An image stored in the Umbraco media library
