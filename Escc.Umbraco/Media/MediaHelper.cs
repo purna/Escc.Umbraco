@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,24 @@ namespace Escc.Umbraco.Media
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Get the size in kilobytes of a media item returned by <see cref="GetUmbracoMedia"/>
+        /// </summary>
+        /// <param name="mediaItem">The resource to return the size of</param>
+        /// <returns>string with the size in kilobytes followed by a lowercase k, eg 123k</returns>
+        public static string GetFileSizeInKilobytes(MediaValues mediaItem)
+        {
+            // get ref to media item
+            if (mediaItem != null && mediaItem.Values.ContainsKey("umbracoBytes"))
+            {
+                // convert bytes to kbytes
+                double kSize = Math.Round((double)(Int32.Parse(mediaItem.Values["umbracoBytes"], CultureInfo.InvariantCulture)) / 1024);
+                return kSize.ToString(CultureInfo.CurrentCulture) + "k";
+            }
+            
+            throw new ArgumentException("Resource does not represent an item in the Umbraco media section", "mediaItem");
         }
     }
 }
