@@ -215,6 +215,8 @@
   <ItemGroup>
     <Compile Include="Caching\IHttpCachingService.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Media\MediaHelper.cs" />
+    <Compile Include="Media\MediaValues.cs" />
     <Compile Include="PropertyTypes\IUrlListReader.cs" />
     <Compile Include="PublishingDateBugFixHandler.cs" />
     <Compile Include="Caching\CacheFreshness.cs" />
