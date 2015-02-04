@@ -9,7 +9,7 @@ namespace Escc.Umbraco.Media
     /// <summary>
     /// Helper for working with Umbraco media items
     /// </summary>
-    class MediaHelper
+    public class MediaHelper
     {
         /// <summary>
         /// Gets an Umbraco media item.
