@@ -65,7 +65,7 @@ namespace Escc.Umbraco.PropertyTypes
             var urlList = content.GetPropertyValue<string>(propertyAlias);
             if (!String.IsNullOrWhiteSpace(urlList))
             {
-                var urlLines = urlList.Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
+                var urlLines = urlList.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var urlLine in urlLines)
                 {
                     try
@@ -90,4 +90,4 @@ namespace Escc.Umbraco.PropertyTypes
             }
         }   
     }
-}
+}   
