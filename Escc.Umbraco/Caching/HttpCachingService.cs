@@ -71,7 +71,9 @@ namespace Escc.Umbraco.Caching
                 var freshness = WorkOutCacheFreshness(relativeToDate, defaultCachePeriod, contentExpiryDates);
 
                 // Cache the page
-                cachePolicy.SetCacheability(HttpCacheability.Public);
+                // Use "private" setting so that shared caches aren't used, because shared caches might cache the mobile view and serve it to a desktop user.
+                // "Vary: User-Agent" should be the best way to prevent that, but .NET converts it to "Vary: *" which effectively prevents caching.
+                cachePolicy.SetCacheability(HttpCacheability.Private);
                 cachePolicy.SetExpires(freshness.FreshUntil.ToUniversalTime());
                 cachePolicy.SetMaxAge(freshness.FreshFor);
             }
