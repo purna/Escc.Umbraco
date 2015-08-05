@@ -32,11 +32,21 @@ namespace Escc.Umbraco.PropertyTypes
 
         private static HtmlLink LinkViewModelFromRelatedLink(RelatedLink relatedLink)
         {
-            return new HtmlLink()
+            try
             {
-                Text = relatedLink.Caption,
-                Url = new Uri(relatedLink.Link, UriKind.RelativeOrAbsolute)
-            };
+                return new HtmlLink()
+                {
+                    Text = relatedLink.Caption,
+                    Url = new Uri(relatedLink.Link, UriKind.RelativeOrAbsolute)
+                };
+            }
+            catch (UriFormatException)
+            {
+                return new HtmlLink()
+                {
+                    Text = relatedLink.Caption
+                };
+            }
         }
     }
 }
